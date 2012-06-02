@@ -17,6 +17,7 @@
 <resources>
     <string name="app_name">Calevent</string>
     <string name="camera_sample">Camera Example</string>
+    <string name="calendar_sample">Calendar Example</string>
     <string name="clip_label">Clip Label</string>
 
     <string name="app_widget_name">Calevent Widget</string>
@@ -39,7 +40,7 @@
     <string name="menu_refresh">Refresh</string> 
     <string name="menu_search">Search</string> 
     <string name="menu_share">Share</string> 
-    <string name="menu_calender">Calender</string> 
+    <string name="menu_calender">Calendar</string> 
     <string name="menu_location">Location</string> 
     <string name="menu_settings">Settings</string> 
     <string name="menu_about">About</string> 

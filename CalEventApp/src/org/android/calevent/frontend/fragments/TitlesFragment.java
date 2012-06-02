@@ -22,7 +22,6 @@ import org.android.calevent.stub.DirectoryCategory;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.ClipData;
 import android.content.res.TypedArray;
@@ -48,7 +47,7 @@ import android.widget.TextView;
  * in MainActivity. In this case, selecting a list item opens the ContentActivity,
  * which likewise holds only the ContentFragment.
  */
-public class TitlesFragment extends ListFragment implements ActionBar.TabListener {
+public class TitlesFragment extends ListFragment {
     OnItemSelectedListener mListener;
     private int mCategory = 0;
     private int mCurPosition = 0;
@@ -94,11 +93,11 @@ public class TitlesFragment extends ListFragment implements ActionBar.TabListene
         // Must call in order to get callback to onCreateOptionsMenu()
         setHasOptionsMenu(true);
 
-        Directory.initializeDirectory();
+        /*Directory.initializeDirectory();
         for (int i = 0; i < Directory.getCategoryCount(); i++) {
             bar.addTab(bar.newTab().setText(Directory.getCategory(i).getName())
                     .setTabListener(this));
-        }
+        }*/
 
         //Current position should survive screen rotations.
         if (savedInstanceState != null) {
@@ -231,28 +230,4 @@ public class TitlesFragment extends ListFragment implements ActionBar.TabListene
             }
         }
     };
-
-
-    /* The following are callbacks implemented for the ActionBar.TabListener,
-     * which this fragment implements to handle events when tabs are selected.
-     */
-
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        TitlesFragment titleFrag = (TitlesFragment) getFragmentManager()
-                .findFragmentById(R.id.titles_frag);
-        titleFrag.populateTitles(tab.getPosition());
-        
-        if (mDualFragments) {
-            titleFrag.selectPosition(0);
-        }
-    }
-
-    /* These must be implemented, but we don't use them */
-    
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-    }
-
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-    }
-
 }

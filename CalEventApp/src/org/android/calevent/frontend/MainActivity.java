@@ -16,10 +16,13 @@
 
 package org.android.calevent.frontend;
 
+import org.android.calevent.frontend.fragments.CalendarActivity;
+import org.android.calevent.frontend.fragments.CalendarFragment;
 import org.android.calevent.frontend.fragments.CameraActivity;
 import org.android.calevent.frontend.fragments.ContentActivity;
 import org.android.calevent.frontend.fragments.ContentFragment;
 import org.android.calevent.frontend.fragments.TitlesFragment;
+import org.android.calevent.stub.Directory;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -27,6 +30,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -57,7 +61,7 @@ import android.widget.Toast;
  * TitlesFragments and the Content Fragment. When on a smaller screen size, this
  * activity displays only the TitlesFragment. In which case, selecting a list
  * item opens the ContentActivity, holds only the ContentFragment. */
-public class MainActivity extends Activity implements TitlesFragment.OnItemSelectedListener {
+public class MainActivity extends Activity implements TitlesFragment.OnItemSelectedListener, ActionBar.TabListener {
 
     private Animator mCurrentTitlesAnimator;
     private String[] mToggleLabels = {"Show Titles", "Hide Titles"};
@@ -65,6 +69,7 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     private static final String ACTION_DIALOG = "com.example.android.hcgallery.action.DIALOG";
     private int mThemeId = -1;
     private boolean mDualFragments = false;
+    private boolean mCalendar = false;
     private boolean mTitlesHidden = false;
 
     @Override
@@ -83,10 +88,19 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
 
         ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(false);
+        
+        Directory.initializeDirectory();
+        for (int i = 0; i < Directory.getCategoryCount(); i++) {
+            bar.addTab(bar.newTab().setText(Directory.getCategory(i).getName())
+                    .setTabListener(this));
+        }
 
         ContentFragment frag = (ContentFragment) getFragmentManager()
                 .findFragmentById(R.id.content_frag);
         if (frag != null) mDualFragments = true;
+        CalendarFragment calendar_frag = (CalendarFragment) getFragmentManager()
+                .findFragmentById(R.id.calendar_frag);
+        if (calendar_frag != null) mCalendar = true;
         
         if (mTitlesHidden) {
             getFragmentManager().beginTransaction()
@@ -139,7 +153,7 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
             Toast.makeText(this, "Tapped search", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_location:
-            Toast.makeText(this, "Tapped location", Toast.LENGTH_SHORT).show();
+        	showDialog("Please select the desired location.");
             return true;
         case R.id.menu_settings:
             Toast.makeText(this, "Tapped settings", Toast.LENGTH_SHORT).show();
@@ -349,20 +363,20 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
      * it's passed back to this activity through this method so that we can
      * deliver it to the ContentFragment in the manner appropriate */
     public void onItemSelected(int category, int position) {
-      if (!mDualFragments) {
-          // If showing only the TitlesFragment, start the ContentActivity and
-          // pass it the info about the selected item
-          Intent intent = new Intent(this, ContentActivity.class);
-          intent.putExtra("category", category);
-          intent.putExtra("position", position);
-          intent.putExtra("theme", mThemeId);
-          startActivity(intent);
-      } else {
-          // If showing both fragments, directly update the ContentFragment
-          ContentFragment frag = (ContentFragment) getFragmentManager()
-                  .findFragmentById(R.id.content_frag);
-          frag.updateContentAndRecycleBitmap(category, position);
-      }
+		if (!mDualFragments) {
+		   	  // If showing only the TitlesFragment, start the ContentActivity and
+	          // pass it the info about the selected item
+	          Intent intent = new Intent(this, ContentActivity.class);
+	          intent.putExtra("category", category);
+	          intent.putExtra("position", position);
+	          intent.putExtra("theme", mThemeId);
+	          startActivity(intent);
+	      } else {
+	          // If showing both fragments, directly update the ContentFragment
+	          ContentFragment frag = (ContentFragment) getFragmentManager()
+	                  .findFragmentById(R.id.content_frag);
+	          frag.updateContentAndRecycleBitmap(category, position);
+	      }	
     }
 
 
@@ -393,4 +407,47 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
                     .create();
         }
     }
+
+
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		TitlesFragment titleFrag = (TitlesFragment) getFragmentManager()
+                .findFragmentById(R.id.titles_frag);
+        if (!tab.getText().toString().equals(getString(R.string.menu_calender))){
+        	titleFrag.populateTitles(tab.getPosition());
+        	if (mDualFragments) {
+        		titleFrag.selectPosition(0);
+  	      }	
+        }
+        else {
+        	if (!mCalendar) {
+    		   	  // If showing only the TitlesFragment, start the ContentActivity and
+    	          // pass it the info about the selected item
+    	          Intent intentCalendar = new Intent(this, CalendarActivity.class);
+    	          intentCalendar.putExtra("category", tab.getPosition());
+    	          intentCalendar.putExtra("position", tab.getPosition());
+    	          intentCalendar.putExtra("theme", mThemeId);
+    	          startActivity(intentCalendar);
+    	          Toast.makeText(this, "Calendar...", Toast.LENGTH_SHORT).show();
+    	      } else {
+    	          // If showing both fragments, directly update the ContentFragment
+    	    	  CalendarFragment calendar_frag = (CalendarFragment) getFragmentManager()
+    	                  .findFragmentById(R.id.calendar_frag);
+    	    	  //Intent intentCalendar = calendar_frag.getActivity().getIntent();
+    	          //startActivity(intentCalendar);
+    	          Toast.makeText(this, "Calendar...", Toast.LENGTH_SHORT).show();
+    	          calendar_frag.updateContentAndRecycleBitmap(tab.getPosition(), tab.getPosition());
+    	      }	
+        }
+        
+	}
+
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
+	}
 }
