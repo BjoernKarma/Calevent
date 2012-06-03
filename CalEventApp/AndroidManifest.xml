@@ -24,8 +24,7 @@
         android:theme="@style/AppTheme.Light"
         android:hardwareAccelerated="true"> 
         
-        <!--uses-library android:name="com.google.android.maps" / -->
-        <!--uses-library android:name="com.android.calendar" / -->
+        <!--uses-library android:name="com.google.android.maps" android:required="false"/ -->
 		
         <activity android:name="org.android.calevent.frontend.MainActivity"
             android:label="@string/app_name"
@@ -43,9 +42,16 @@
         <!-- Holds the ContentFragment for small/normal screens -->
         <activity android:name="org.android.calevent.frontend.fragments.ContentActivity" />
         
-        <!-- Holds the CalendarFragment -->
-        <activity android:name="org.android.calevent.frontend.fragments.CalendarActivity"/>
-
+      
+         <!-- this is the searchable activity; it performs searches -->
+    	 <activity android:name="org.android.calevent.fronten.SearchViewActionBar" >
+        	<intent-filter>
+            	<action android:name="android.intent.action.SEARCH" />
+        	</intent-filter>
+        	<meta-data android:name="android.app.searchable"
+                       android:resource="@xml/searchable"/>
+    	</activity>
+    	
         <!-- Camera Sample -->
         <activity android:name="org.android.calevent.frontend.fragments.CameraActivity"
             android:label="@string/camera_sample"

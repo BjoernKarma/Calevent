@@ -16,6 +16,9 @@
 
 package org.android.calevent.frontend;
 
+import java.util.Calendar;
+import java.util.List;
+
 import org.android.calevent.frontend.fragments.CalendarActivity;
 import org.android.calevent.frontend.fragments.CalendarFragment;
 import org.android.calevent.frontend.fragments.CameraActivity;
@@ -40,6 +43,10 @@ import android.app.FragmentTransaction;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -47,13 +54,18 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.RemoteViews;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /** This is the main "launcher" activity.
@@ -61,7 +73,7 @@ import android.widget.Toast;
  * TitlesFragments and the Content Fragment. When on a smaller screen size, this
  * activity displays only the TitlesFragment. In which case, selecting a list
  * item opens the ContentActivity, holds only the ContentFragment. */
-public class MainActivity extends Activity implements TitlesFragment.OnItemSelectedListener, ActionBar.TabListener {
+public class MainActivity extends Activity implements TitlesFragment.OnItemSelectedListener, ActionBar.TabListener, SearchView.OnQueryTextListener {
 
     private Animator mCurrentTitlesAnimator;
     private String[] mToggleLabels = {"Show Titles", "Hide Titles"};
@@ -71,11 +83,14 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     private boolean mDualFragments = false;
     private boolean mCalendar = false;
     private boolean mTitlesHidden = false;
+    private SearchView mSearchView;
+    private TextView mStatusView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        
         if(savedInstanceState != null) {
             if (savedInstanceState.getInt("theme", -1) != -1) {
               mThemeId = savedInstanceState.getInt("theme");
@@ -85,7 +100,8 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         }
 
         setContentView(R.layout.main);
-
+        mStatusView = (TextView) findViewById(R.id.status_text);
+        
         ActionBar bar = getActionBar();
         bar.setDisplayShowTitleEnabled(false);
         
@@ -98,9 +114,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         ContentFragment frag = (ContentFragment) getFragmentManager()
                 .findFragmentById(R.id.content_frag);
         if (frag != null) mDualFragments = true;
-        CalendarFragment calendar_frag = (CalendarFragment) getFragmentManager()
-                .findFragmentById(R.id.calendar_frag);
-        if (calendar_frag != null) mCalendar = true;
         
         if (mTitlesHidden) {
             getFragmentManager().beginTransaction()
@@ -116,7 +129,64 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             menu.removeItem(R.id.menu_camera);
         }
+        
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        mSearchView = (SearchView) searchItem.getActionView();
+        setupSearchView(searchItem);
+       
+        // Get the SearchView and set the searchable configuration
+        /*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default*/
+        
         return true;
+    }
+    
+    private void setupSearchView(MenuItem searchItem) {
+
+        if (isAlwaysExpanded()) {
+            mSearchView.setIconifiedByDefault(false);
+        } else {
+            searchItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM
+                    | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        }
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        if (searchManager != null) {
+            List<SearchableInfo> searchables = searchManager.getSearchablesInGlobalSearch();
+
+            // Try to use the "applications" global search provider
+            SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+            for (SearchableInfo inf : searchables) {
+                if (inf.getSuggestAuthority() != null
+                        && inf.getSuggestAuthority().startsWith("applications")) {
+                    info = inf;
+                }
+            }
+            mSearchView.setSearchableInfo(info);
+        }
+
+        mSearchView.setOnQueryTextListener(this);
+    }
+
+    public boolean onQueryTextChange(String newText) {
+        mStatusView.setText("Query = " + newText);
+        return false;
+    }
+
+    public boolean onQueryTextSubmit(String query) {
+        mStatusView.setText("Query = " + query + " : submitted");
+        return false;
+    }
+
+    public boolean onClose() {
+        mStatusView.setText("Closed!");
+        return false;
+    }
+
+    protected boolean isAlwaysExpanded() {
+        return false;
     }
 
     @Override
@@ -139,7 +209,9 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
             startActivity(intent);
             Toast.makeText(this, "Camera...", Toast.LENGTH_SHORT).show();
             return true;
-            
+        case R.id.menu_filter:
+        	showDialog("Please select the desired filter criteria.");
+            return true;     
         case R.id.menu_refresh:
         	Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
             getWindow().getDecorView().postDelayed(
@@ -152,8 +224,16 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         case R.id.menu_search:
             Toast.makeText(this, "Tapped search", Toast.LENGTH_SHORT).show();
             return true;
-        case R.id.menu_location:
-        	showDialog("Please select the desired location.");
+        case R.id.menu_calendar:
+        	Calendar now = Calendar.getInstance();
+            // A date-time specified in milliseconds since the epoch.
+            long startMillis = now.getTimeInMillis();
+            Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
+            builder.appendPath("time");
+            ContentUris.appendId(builder, startMillis);
+            Intent calendarIntent = new Intent(Intent.ACTION_VIEW).setData(builder.build());
+            startActivity(calendarIntent);
+	        Toast.makeText(this, "Calendar...", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_settings:
             Toast.makeText(this, "Tapped settings", Toast.LENGTH_SHORT).show();
@@ -417,14 +497,15 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		TitlesFragment titleFrag = (TitlesFragment) getFragmentManager()
                 .findFragmentById(R.id.titles_frag);
-        if (!tab.getText().toString().equals(getString(R.string.menu_calender))){
+        if (!tab.getText().toString().equals(getString(R.string.menu_calendar))){
         	titleFrag.populateTitles(tab.getPosition());
         	if (mDualFragments) {
         		titleFrag.selectPosition(0);
   	      }	
         }
         else {
-        	if (!mCalendar) {
+        	
+        	/*if (!mCalendar) {
     		   	  // If showing only the TitlesFragment, start the ContentActivity and
     	          // pass it the info about the selected item
     	          Intent intentCalendar = new Intent(this, CalendarActivity.class);
@@ -441,7 +522,7 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     	          //startActivity(intentCalendar);
     	          Toast.makeText(this, "Calendar...", Toast.LENGTH_SHORT).show();
     	          calendar_frag.updateContentAndRecycleBitmap(tab.getPosition(), tab.getPosition());
-    	      }	
+    	      }	*/
         }
         
 	}

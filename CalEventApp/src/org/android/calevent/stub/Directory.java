@@ -24,17 +24,13 @@ public class Directory {
     public static void initializeDirectory() {
       mCategories = new DirectoryCategory[] {
                 new DirectoryCategory("List", new DirectoryEntry[] {
-                        new DirectoryEntry("Red Balloon", R.drawable.red_balloon),
-                        new DirectoryEntry("Green Balloon", R.drawable.green_balloon),
-                        new DirectoryEntry("Blue Balloon", R.drawable.blue_balloon)}),
+                        new DirectoryEntry("Event 1", R.drawable.red_balloon),
+                        new DirectoryEntry("Event 2", R.drawable.green_balloon),
+                        new DirectoryEntry("Event 3", R.drawable.blue_balloon)}),
                 new DirectoryCategory("Map", new DirectoryEntry[] {
-                        new DirectoryEntry("Old school huffy", R.drawable.blue_bike),
-                        new DirectoryEntry("New Bikes", R.drawable.rainbow_bike),
-                        new DirectoryEntry("Chrome Fast", R.drawable.chrome_wheel)}),
-                new DirectoryCategory("Calendar", new DirectoryEntry[] {
-                        new DirectoryEntry("Steampunk Android", R.drawable.punk_droid),
-                        new DirectoryEntry("Stargazing Android", R.drawable.stargazer_droid),
-                        new DirectoryEntry("Big Android", R.drawable.big_droid) }),
+                        new DirectoryEntry("Event 4", R.drawable.blue_bike),
+                        new DirectoryEntry("Event 5", R.drawable.rainbow_bike),
+                        new DirectoryEntry("Event 6", R.drawable.chrome_wheel)}),
                };
 
     }
