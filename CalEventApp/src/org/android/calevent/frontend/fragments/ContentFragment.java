@@ -214,7 +214,7 @@ public class ContentFragment extends Fragment {
             // Show status bar (remove fullscreen flag)
             window.setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // Show system bar
-            view.setSystemUiVisibility(View.STATUS_BAR_VISIBLE);
+            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
             // Show action bar
             actionBar.show();
         } else {
@@ -222,7 +222,7 @@ public class ContentFragment extends Fragment {
             window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // Hide system bar
-            view.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
+            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
             // Hide action bar
             actionBar.hide();
         }

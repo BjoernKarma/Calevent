@@ -19,8 +19,7 @@ package org.android.calevent.frontend;
 import java.util.Calendar;
 import java.util.List;
 
-import org.android.calevent.frontend.fragments.CalendarActivity;
-import org.android.calevent.frontend.fragments.CalendarFragment;
+import org.android.calevent.frontend.dialogs.FilterDialogFragment;
 import org.android.calevent.frontend.fragments.CameraActivity;
 import org.android.calevent.frontend.fragments.ContentActivity;
 import org.android.calevent.frontend.fragments.ContentFragment;
@@ -81,7 +80,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     private static final String ACTION_DIALOG = "com.example.android.hcgallery.action.DIALOG";
     private int mThemeId = -1;
     private boolean mDualFragments = false;
-    private boolean mCalendar = false;
     private boolean mTitlesHidden = false;
     private SearchView mSearchView;
     private TextView mStatusView;
@@ -133,12 +131,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchItem.getActionView();
         setupSearchView(searchItem);
-       
-        // Get the SearchView and set the searchable configuration
-        /*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default*/
         
         return true;
     }
@@ -210,7 +202,7 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
             Toast.makeText(this, "Camera...", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_filter:
-        	showDialog("Please select the desired filter criteria.");
+        	showFilterDialog(getString(R.string.filter_dialog_title));
             return true;     
         case R.id.menu_refresh:
         	Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
@@ -372,7 +364,19 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         DialogFragment newFragment = MyDialogFragment.newInstance(text);
+        
+        // Show the dialog.
+        newFragment.show(ft, "dialog");
+    }
+    
+    void showFilterDialog(String text) {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
 
+        FilterDialogFragment newFragment = FilterDialogFragment.newInstance(text);
+        
         // Show the dialog.
         newFragment.show(ft, "dialog");
     }
@@ -473,18 +477,20 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            String text = getArguments().getString("text");
-
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle("A Dialog of Awesome")
-                    .setMessage(text)
-                    .setPositiveButton(android.R.string.ok,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                }
-                            }
-                    )
-                    .create();
+          
+        	String text = getArguments().getString("text");
+            
+            AlertDialog dialog = new AlertDialog.Builder(getActivity())
+            .setTitle("Awesome Dialog")
+            .setMessage(text)
+            .setPositiveButton(android.R.string.ok,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    }
+            ).create();
+            
+            return dialog;
         }
     }
 

@@ -20,5 +20,15 @@
         <attr name="menuIconCamera" format="reference" />
         <attr name="menuIconToggle" format="reference" />
         <attr name="menuIconShare" format="reference" />
+        <attr name="menuIconAbout" format="reference" />
+        <attr name="menuIconEvent" format="reference" />
+        <attr name="menuIconFavorite" format="reference" />
+        <attr name="menuIconFilter" format="reference" />
+        <attr name="menuIconRefresh" format="reference" />
+        <attr name="menuIconSearch" format="reference" />
+        <attr name="menuIconSettings" format="reference" />
+        <attr name="menuIconSortBySize" format="reference" />
+        <attr name="menuIconViewAsGrid" format="reference" />
+        <attr name="menuIconViewAsList" format="reference" />
     </declare-styleable>
 </resources>

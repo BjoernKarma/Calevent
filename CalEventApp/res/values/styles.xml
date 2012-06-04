@@ -32,6 +32,16 @@
         <item name="menuIconCamera">@drawable/ic_menu_camera_holo_light</item>
         <item name="menuIconToggle">@drawable/ic_menu_toggle_holo_light</item>
         <item name="menuIconShare">@drawable/ic_menu_share_holo_light</item>
+        <item name="menuIconAbout">@drawable/ic_menu_about_holo_light</item>
+        <item name="menuIconEvent">@drawable/ic_menu_event_holo_light</item>
+        <item name="menuIconFavorite">@drawable/ic_menu_favorite_holo_light</item>
+        <item name="menuIconFilter">@drawable/ic_menu_location_place_holo_light</item>
+        <item name="menuIconRefresh">@drawable/ic_menu_refresh_holo_light</item>
+        <item name="menuIconSearch">@drawable/ic_menu_search_holo_light</item>
+        <item name="menuIconSettings">@drawable/ic_menu_settings_holo_light</item>
+        <item name="menuIconSortBySize">@drawable/ic_menu_sort_by_size_holo_light</item>
+        <item name="menuIconViewAsGrid">@drawable/ic_menu_view_as_grid_holo_light</item>
+        <item name="menuIconViewAsList">@drawable/ic_menu_view_as_list_holo_light</item>   
     </style>
 
     <style name="AppTheme.Dark" parent="@android:style/Theme.Holo">
@@ -41,5 +51,15 @@
         <item name="menuIconCamera">@drawable/ic_menu_camera_holo_dark</item>
         <item name="menuIconToggle">@drawable/ic_menu_toggle_holo_dark</item>
         <item name="menuIconShare">@drawable/ic_menu_share_holo_dark</item>
+        <item name="menuIconAbout">@drawable/ic_menu_about_holo_dark</item>
+        <item name="menuIconEvent">@drawable/ic_menu_event_holo_dark</item>
+        <item name="menuIconFavorite">@drawable/ic_menu_favorite_holo_dark</item>
+        <item name="menuIconFilter">@drawable/ic_menu_location_place_holo_dark</item>
+        <item name="menuIconRefresh">@drawable/ic_menu_refresh_holo_dark</item>
+        <item name="menuIconSearch">@drawable/ic_menu_search_holo_dark</item>
+        <item name="menuIconSettings">@drawable/ic_menu_settings_holo_dark</item>
+        <item name="menuIconSortBySize">@drawable/ic_menu_sort_by_size_holo_dark</item>
+        <item name="menuIconViewAsGrid">@drawable/ic_menu_view_as_grid_holo_dark</item>
+        <item name="menuIconViewAsList">@drawable/ic_menu_view_as_list_holo_dark</item>
     </style>
 </resources>
