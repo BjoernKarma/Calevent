@@ -23,6 +23,8 @@ import org.android.calevent.frontend.dialogs.FilterDialogFragment;
 import org.android.calevent.frontend.fragments.CameraActivity;
 import org.android.calevent.frontend.fragments.ContentActivity;
 import org.android.calevent.frontend.fragments.ContentFragment;
+import org.android.calevent.frontend.fragments.FilterActivity;
+import org.android.calevent.frontend.fragments.SettingsActivity;
 import org.android.calevent.frontend.fragments.TitlesFragment;
 import org.android.calevent.stub.Directory;
 
@@ -202,7 +204,11 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
             Toast.makeText(this, "Camera...", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_filter:
-        	showFilterDialog(getString(R.string.filter_dialog_title));
+        	//showFilterDialog(getString(R.string.filter_dialog_title));
+        	Intent filterIntent = new Intent(this, FilterActivity.class);
+        	filterIntent.putExtra("theme", mThemeId);
+            startActivity(filterIntent);
+            Toast.makeText(this, "Filter...", Toast.LENGTH_SHORT).show();
             return true;     
         case R.id.menu_refresh:
         	Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
@@ -228,6 +234,9 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
 	        Toast.makeText(this, "Calendar...", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_settings:
+        	Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        	settingsIntent.putExtra("theme", mThemeId);
+            startActivity(settingsIntent);
             Toast.makeText(this, "Tapped settings", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_toggleTitles:
