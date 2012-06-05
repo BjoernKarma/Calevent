@@ -47,7 +47,20 @@
     <string name="menu_settings">Settings</string> 
     <string name="menu_about">About</string> 
     
-    <!-- FilterDialog strings -->  
+    <!-- Content menu strings -->
+    <string name="text_view_event_name">Name of the event</string>
+    <string name="text_view_event_location_label">Location</string>
+    <string name="text_view_event_location">Location of the event</string>
+    <string name="text_view_event_location_city_label">City</string>
+    <string name="text_view_event_location_city">City of the event</string>
+    <string name="text_view_event_location_address_label">Address</string>
+    <string name="text_view_event_location_address">Address of the event</string>
+    <string name="text_view_event_start_label">Time</string>
+    <string name="text_view_event_start">Time of the event</string>
+    <string name="text_view_event_contact_label">Contact</string>
+    <string name="text_view_event_contact">Contact of the event</string>
+    
+    <!-- Filter menu strings -->  
     <string name="filter_dialog_title">Filter</string>    
     <string name="text_view_location">Choose a location</string>
     <string name="text_view_category">Choose categories</string>

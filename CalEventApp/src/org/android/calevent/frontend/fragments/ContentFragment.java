@@ -75,11 +75,11 @@ public class ContentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.content_welcome, null);
-        final ImageView imageView = (ImageView) mContentView.findViewById(R.id.image);
+        //final ImageView imageView = (ImageView) mContentView.findViewById(R.id.image);
         mContentView.setDrawingCacheEnabled(false);
 
         // Handle drag events when a list item is dragged into the view
-        mContentView.setOnDragListener(new View.OnDragListener() {
+        /*mContentView.setOnDragListener(new View.OnDragListener() {
             public boolean onDrag(View view, DragEvent event) {
                 switch (event.getAction()) {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -100,7 +100,7 @@ public class ContentFragment extends Fragment {
                 }
                 return false;
             }
-        });
+        });*/
 
         // Show/hide the system status bar when single-clicking a photo.
         mContentView.setOnClickListener(new OnClickListener() {
@@ -295,7 +295,7 @@ public class ContentFragment extends Fragment {
         // Get the bitmap that needs to be drawn and update the ImageView
         mBitmap = Directory.getCategory(category).getEntry(position)
                 .getBitmap(getResources());
-        ((ImageView) getView().findViewById(R.id.image)).setImageBitmap(mBitmap);
+        //((ImageView) getView().findViewById(R.id.image)).setImageBitmap(mBitmap);
     }
 
     /** Share the currently selected photo using an AsyncTask to compress the image
