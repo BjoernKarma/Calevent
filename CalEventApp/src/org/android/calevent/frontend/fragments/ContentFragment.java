@@ -16,6 +16,16 @@
 
 package org.android.calevent.frontend.fragments;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.android.calevent.frontend.MainActivity;
+import org.android.calevent.frontend.R;
+import org.android.calevent.stub.Directory;
+
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.ClipData;
@@ -36,20 +46,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.StringTokenizer;
-
-import org.android.calevent.frontend.R;
-import org.android.calevent.frontend.MainActivity;
-import org.android.calevent.stub.Directory;
 
 /** Fragment that shows the content selected from the TitlesFragment.
  * When running on a screen size smaller than "large", this fragment is hosted in
@@ -61,7 +65,13 @@ public class ContentFragment extends Fragment {
     private int mCurPosition = 0;
     private boolean mSystemUiVisible = true;
     private boolean mSoloFragment = false;
-
+    
+    
+    private ImageButton mButtonCalendar = null;
+    private ImageButton mButtonLocation = null;
+    private ImageButton mButtonFavorite = null;
+    private ImageButton mButtonShare = null;
+    
     // The bitmap currently used by ImageView
     private Bitmap mBitmap = null;
 
@@ -75,11 +85,44 @@ public class ContentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.content_welcome, null);
-        //final ImageView imageView = (ImageView) mContentView.findViewById(R.id.image);
+        final ImageView imageView = (ImageView) mContentView.findViewById(R.id.image);
         mContentView.setDrawingCacheEnabled(false);
+        
+        
+        mButtonCalendar = (ImageButton) mContentView.findViewById(R.id.button_add_calendar);
+		// add a click listener to the button
+        mButtonCalendar.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Toast.makeText(getActivity(), "Adding event to calendar...", Toast.LENGTH_SHORT).show();	
+			}
+		});
+        
+        mButtonLocation = (ImageButton) mContentView.findViewById(R.id.button_location);
+		// add a click listener to the button
+        mButtonLocation.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Toast.makeText(getActivity(), "Opening event location in map...", Toast.LENGTH_SHORT).show();	
+			}
+		});
+        
+        mButtonFavorite = (ImageButton) mContentView.findViewById(R.id.button_favorite);
+		// add a click listener to the button
+        mButtonFavorite.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Toast.makeText(getActivity(), "Adding event to favorites...", Toast.LENGTH_SHORT).show();	
+			}
+		});
+        
+        mButtonShare = (ImageButton) mContentView.findViewById(R.id.button_share);
+		// add a click listener to the button
+        mButtonShare.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Toast.makeText(getActivity(), "Sharing event...", Toast.LENGTH_SHORT).show();	
+			}
+		});
 
         // Handle drag events when a list item is dragged into the view
-        /*mContentView.setOnDragListener(new View.OnDragListener() {
+        mContentView.setOnDragListener(new View.OnDragListener() {
             public boolean onDrag(View view, DragEvent event) {
                 switch (event.getAction()) {
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -100,7 +143,7 @@ public class ContentFragment extends Fragment {
                 }
                 return false;
             }
-        });*/
+        });
 
         // Show/hide the system status bar when single-clicking a photo.
         mContentView.setOnClickListener(new OnClickListener() {
@@ -173,6 +216,14 @@ public class ContentFragment extends Fragment {
           ActionBar bar = getActivity().getActionBar();
           bar.setTitle(title);
         }
+        
+        // Attach a GlobalLayoutListener so that we get a callback when the layout
+        // has finished drawing. This is necessary so that we can apply top-margin
+        // to the ListView in order to dodge the ActionBar. Ordinarily, that's not
+        // necessary, but we've set the ActionBar to "overlay" mode using our theme,
+        // so the layout does not account for the action bar position on its own.
+        ViewTreeObserver observer = getView().getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(layoutListener);
     }
 
     @Override
@@ -197,6 +248,38 @@ public class ContentFragment extends Fragment {
         outState.putInt("category", mCategory);
         outState.putBoolean("systemUiVisible", mSystemUiVisible);
     }
+    
+    @Override
+    public void onDestroyView() {
+      super.onDestroyView();
+      // Always detach ViewTreeObserver listeners when the view tears down
+      getView().getViewTreeObserver().removeGlobalOnLayoutListener(layoutListener);
+    }
+    
+    // Because the fragment doesn't have a reliable callback to notify us when
+    // the activity's layout is completely drawn, this OnGlobalLayoutListener provides
+    // the necessary callback so we can add top-margin to the ListView in order to dodge
+    // the ActionBar. Which is necessary because the ActionBar is in overlay mode, meaning
+    // that it will ordinarily sit on top of the activity layout as a top layer and
+    // the ActionBar height can vary. Specifically, when on a small/normal size screen,
+    // the action bar tabs appear in a second row, making the action bar twice as tall.
+    ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        public void onGlobalLayout() {
+            int barHeight = getActivity().getActionBar().getHeight();
+            View view = getView();
+            FrameLayout.LayoutParams params = (LayoutParams) view.getLayoutParams();
+            // The list view top-margin should always match the action bar height
+            if (params.topMargin != barHeight) {
+                params.topMargin = barHeight;
+                view.setLayoutParams(params);
+            }
+            // The action bar doesn't update its height when hidden, so make top-margin zero
+            if (!getActivity().getActionBar().isShowing()) {
+              params.topMargin = 0;
+              view.setLayoutParams(params);
+            }
+        }
+    };
 
     /** Toggle whether the system UI (status bar / system bar) is visible.
      *  This also toggles the action bar visibility.
@@ -231,7 +314,7 @@ public class ContentFragment extends Fragment {
 
     boolean processDragStarted(DragEvent event) {
         // Determine whether to continue processing drag and drop based on the
-        // plain text mime type.
+        // plain text MIME type.
         ClipDescription clipDesc = event.getClipDescription();
         if (clipDesc != null) {
             return clipDesc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
@@ -271,7 +354,8 @@ public class ContentFragment extends Fragment {
         }
         return false;
     }
-
+    
+    
     /**
      * Sets the current image visible.
      * @param category Index position of the image category
@@ -295,7 +379,7 @@ public class ContentFragment extends Fragment {
         // Get the bitmap that needs to be drawn and update the ImageView
         mBitmap = Directory.getCategory(category).getEntry(position)
                 .getBitmap(getResources());
-        //((ImageView) getView().findViewById(R.id.image)).setImageBitmap(mBitmap);
+        ((ImageView) getView().findViewById(R.id.image)).setImageBitmap(mBitmap);
     }
 
     /** Share the currently selected photo using an AsyncTask to compress the image

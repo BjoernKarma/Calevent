@@ -23,10 +23,29 @@ import android.graphics.drawable.Drawable;
 
 public class DirectoryEntry {
     private String name;
+    private String location;
+    private String city;
+    private String address;
+    private String contact;
+    private int hour;
+    private int minute;
+
+    
     private int resID;
 
     public DirectoryEntry(String name, int resID) {
         this.name = name;
+        this.resID = resID;
+    }
+    
+    public DirectoryEntry(String name, String location, String city, String address, String contact, int hour, int minute, int resID) {
+        this.name = name;
+        this.location = location;
+        this.city = city;
+        this.address = address;
+        this.contact = contact;
+        this.hour = hour;
+        this.minute = minute;
         this.resID = resID;
     }
 
@@ -41,4 +60,52 @@ public class DirectoryEntry {
     public Bitmap getBitmap(Resources res) {
         return BitmapFactory.decodeResource(res, resID);
     }
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
+	public int getHour() {
+		return hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public int getMinute() {
+		return minute;
+	}
+
+	public void setMinute(int minute) {
+		this.minute = minute;
+	}
 }

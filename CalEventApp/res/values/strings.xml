@@ -29,6 +29,8 @@
     <string name="notification_text">Example notification text</string>
 
     <string name="photo_selection_cab_title">Photo selection</string>
+    <string name='theme_holo_light'>Android Holo Light</string>
+    <string name='theme_holo_dark'>Android Holo Dark</string>
 
     <!-- Menu strings -->
     <string name="share">Share</string>
@@ -49,6 +51,7 @@
     
     <!-- Content menu strings -->
     <string name="text_view_event_name">Name of the event</string>
+    <string name="text_view_event_description">Description of the event</string>
     <string name="text_view_event_location_label">Location</string>
     <string name="text_view_event_location">Location of the event</string>
     <string name="text_view_event_location_city_label">City</string>
@@ -59,6 +62,7 @@
     <string name="text_view_event_start">Time of the event</string>
     <string name="text_view_event_contact_label">Contact</string>
     <string name="text_view_event_contact">Contact of the event</string>
+    <string name="text_view_event_pictures">Pictures</string>
     
     <!-- Filter menu strings -->  
     <string name="filter_dialog_title">Filter</string>    

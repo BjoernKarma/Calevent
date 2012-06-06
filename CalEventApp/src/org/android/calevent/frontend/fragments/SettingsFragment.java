@@ -30,6 +30,7 @@ import android.widget.Toast;
  *
  */
 public class SettingsFragment extends Fragment {
+	private View mSettingsView;
     private int mCategory = 0;
     private int mCurPosition = 0;
     private boolean mSystemUiVisible = true;
@@ -42,7 +43,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-    	View mSettingsView = inflater.inflate(R.layout.settings_welcome, container, false);       
+    	mSettingsView = inflater.inflate(R.layout.settings_welcome, container, false);       
         
         Spinner spinnerTheme = (Spinner) mSettingsView.findViewById(R.id.spinner_theme);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -50,6 +51,7 @@ public class SettingsFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTheme.setAdapter(adapter);
         spinnerTheme.setOnItemSelectedListener(new ThemeOnItemSelectedListener());
+        spinnerTheme.setSelection(0);
         
         Spinner spinnerLanguage = (Spinner) mSettingsView.findViewById(R.id.spinner_language);
         adapter = ArrayAdapter.createFromResource(
@@ -57,6 +59,7 @@ public class SettingsFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLanguage.setAdapter(adapter);
         spinnerLanguage.setOnItemSelectedListener(new LanguageOnItemSelectedListener());
+        spinnerLanguage.setSelection(0);
 
         return mSettingsView;
     }
@@ -69,8 +72,8 @@ public class SettingsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // Set member variable for whether this fragment is the only one in the activity
-        Fragment settingsFragment = getFragmentManager().findFragmentById(R.id.titles_frag);
-        mSoloFragment = settingsFragment == null ? true : false;
+        Fragment titlesFragment = getFragmentManager().findFragmentById(R.id.titles_frag);
+        mSoloFragment = titlesFragment == null ? true : false;
         ActionBar bar = getActivity().getActionBar();   
 
         if (mSoloFragment) {
@@ -93,10 +96,10 @@ public class SettingsFragment extends Fragment {
             }
         }
 
-        /*if (mSoloFragment) {
-          String title = Directory.getCategory(mCategory).getEntry(mCurPosition).getName();
+        if (mSoloFragment) {
+          String title = getString(R.string.menu_settings);
           bar.setTitle(title);
-        }*/
+        }
         
         // Attach a GlobalLayoutListener so that we get a callback when the layout
         // has finished drawing. This is necessary so that we can apply top-margin
@@ -143,14 +146,14 @@ public class SettingsFragment extends Fragment {
         ActionBar actionBar = getActivity().getActionBar();
 
         if (show) {
-            // Show status bar (remove fullscreen flag)
+            // Show status bar (remove full screen flag)
             window.setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // Show system bar
             view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
             // Show action bar
             actionBar.show();
         } else {
-            // Add fullscreen flag (hide status bar)
+            // Add full screen flag (hide status bar)
             window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // Hide system bar
@@ -199,10 +202,20 @@ public class SettingsFragment extends Fragment {
             View view, int pos, long id) {
             Toast.makeText(parent.getContext(), "The theme is " +
             parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
-            Toast.makeText(parent.getContext(), "Toggle theme...", Toast.LENGTH_SHORT).show();
+            
+            String theme = parent.getItemAtPosition(pos).toString();
+            if (theme.equals(getString(R.string.theme_holo_dark))){
+            	getActivity().setTheme(R.style.AppTheme_Dark);
+            }
+            else if (theme.equals(getString(R.string.theme_holo_light))){
+            	getActivity().setTheme(R.style.AppTheme_Light);
+            }
+            else {
+            	getActivity().setTheme(R.style.AppTheme_Light);
+            } 
         }
 
-        public void onNothingSelected(AdapterView parent) {
+        public void onNothingSelected(AdapterView<?> parent) {
           // Do nothing.
         }
     }
@@ -212,11 +225,11 @@ public class SettingsFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parent,
             View view, int pos, long id) {
             Toast.makeText(parent.getContext(), "The language is " +
-              parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
-            Toast.makeText(parent.getContext(), "Toggle language...", Toast.LENGTH_SHORT).show();
+            parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
+            
         }
 
-        public void onNothingSelected(AdapterView parent) {
+        public void onNothingSelected(AdapterView<?> parent) {
           // Do nothing.
         }
     }

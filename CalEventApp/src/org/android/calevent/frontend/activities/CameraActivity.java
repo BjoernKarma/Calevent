@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.android.calevent.frontend.fragments;
+package org.android.calevent.frontend.activities;
 
 import org.android.calevent.frontend.R;
 

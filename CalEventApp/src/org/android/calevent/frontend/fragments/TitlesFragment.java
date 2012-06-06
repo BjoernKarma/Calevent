@@ -93,12 +93,6 @@ public class TitlesFragment extends ListFragment {
         // Must call in order to get callback to onCreateOptionsMenu()
         setHasOptionsMenu(true);
 
-        /*Directory.initializeDirectory();
-        for (int i = 0; i < Directory.getCategoryCount(); i++) {
-            bar.addTab(bar.newTab().setText(Directory.getCategory(i).getName())
-                    .setTabListener(this));
-        }*/
-
         //Current position should survive screen rotations.
         if (savedInstanceState != null) {
             mCategory = savedInstanceState.getInt("category");

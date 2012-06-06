@@ -40,7 +40,7 @@
         </activity>
 
         <!-- Holds the ContentFragment for small/normal screens -->
-        <activity android:name="org.android.calevent.frontend.fragments.ContentActivity" />
+        <activity android:name=".activities.ContentActivity" />
         
       
          <!-- this is the searchable activity; it performs searches -->
@@ -53,15 +53,15 @@
     	</activity>
     	
         <!-- Camera Sample -->
-        <activity android:name="org.android.calevent.frontend.fragments.CameraActivity"
+        <activity android:name=".activities.CameraActivity"
             android:label="@string/camera_sample"
             android:screenOrientation="landscape" />
         
         <!-- Filter Fragment -->
-        <activity android:name="org.android.calevent.frontend.fragments.FilterActivity" />
+        <activity android:name=".activities.FilterActivity" />
         
         <!-- Settings Fragment -->
-        <activity android:name="org.android.calevent.frontend.fragments.SettingsActivity" />
+        <activity android:name=".activities.SettingsActivity" />
         
       </application>
      

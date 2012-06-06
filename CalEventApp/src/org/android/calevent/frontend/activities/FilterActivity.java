@@ -1,21 +1,15 @@
 /**
  * 
  */
-package org.android.calevent.frontend.fragments;
+package org.android.calevent.frontend.activities;
 
 import java.util.Calendar;
 
 import org.android.calevent.frontend.R;
-import org.android.calevent.frontend.MainActivity.MyDialogFragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -61,10 +55,10 @@ public class FilterActivity extends Activity {
 		if (extras != null) {
 			// Take the info from the intent and deliver it to the fragment so
 			// it can update
-			int category = extras.getInt("category");
+			/*int category = extras.getInt("category");
 			int position = extras.getInt("position");
 			FilterFragment frag = (FilterFragment) getFragmentManager()
-					.findFragmentById(R.id.filter_frag);
+					.findFragmentById(R.id.filter_frag);*/
 		}
 		
 		// capture our View elements

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.android.calevent.frontend.dialogs;
+package org.android.calevent.frontend.fragments;
 
 import org.android.calevent.frontend.R;
 

@@ -1,8 +1,9 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 
-package org.android.calevent.frontend.fragments;
+package org.android.calevent.frontend.activities;
 
 import org.android.calevent.frontend.R;
+import org.android.calevent.frontend.fragments.ContentFragment;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.android.calevent.frontend.fragments;
+package org.android.calevent.frontend.activities;
 
 import org.android.calevent.frontend.R;
 
@@ -37,9 +37,9 @@ public class SettingsActivity extends Activity {
 
 	      if (extras != null) {
 	        // Take the info from the intent and deliver it to the fragment so it can update
-	        int category = extras.getInt("category");
+	        /*int category = extras.getInt("category");
 	        int position = extras.getInt("position");
-	        SettingsFragment frag = (SettingsFragment) getFragmentManager().findFragmentById(R.id.settings_frag);
+	        SettingsFragment frag = (SettingsFragment) getFragmentManager().findFragmentById(R.id.settings_frag);*/
 	      }
 	  }
 

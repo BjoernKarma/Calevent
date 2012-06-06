@@ -3,18 +3,11 @@
  */
 package org.android.calevent.frontend.fragments;
 
-import java.util.Calendar;
-
 import org.android.calevent.frontend.MainActivity;
 import org.android.calevent.frontend.R;
-import org.android.calevent.frontend.MainActivity.MyDialogFragment;
 
 import android.app.ActionBar;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,23 +17,17 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author Bjoern
  * 
  */
 public class FilterFragment extends Fragment {
-	private Fragment mFilterFragment;
+	private View mFilterView;
 	private int mCategory = 0;
 	private int mCurPosition = 0;
 	private boolean mSystemUiVisible = true;
@@ -56,16 +43,16 @@ public class FilterFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View v = inflater.inflate(R.layout.filter_welcome, container, false);
+		mFilterView = inflater.inflate(R.layout.filter_welcome, container, false);
 
-		Spinner spinner = (Spinner) v.findViewById(R.id.spinner_location);
+		Spinner spinner = (Spinner) mFilterView.findViewById(R.id.spinner_location);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				v.getContext(), R.array.locations_array,
+				mFilterView.getContext(), R.array.locations_array,
 				android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 
-		return v;
+		return mFilterView;
 	}
 
 	/**
@@ -79,8 +66,7 @@ public class FilterFragment extends Fragment {
 
 		// Set member variable for whether this fragment is the only one in the
 		// activity
-		Fragment mTitlesFragment = getFragmentManager().findFragmentById(
-				R.id.titles_frag);
+		Fragment mTitlesFragment = getFragmentManager().findFragmentById(R.id.titles_frag);
 		mSoloFragment = mTitlesFragment == null ? true : false;
 		ActionBar bar = getActivity().getActionBar();
 
@@ -107,14 +93,8 @@ public class FilterFragment extends Fragment {
 		}
 
 		if (mSoloFragment) {
-			// String title =
-			// Directory.getCategory(mCategory).getEntry(mCurPosition).getName();
-			// bar.setTitle(title);
-			/*
-			 * String text = getArguments().getString("text"); mFilterFragment =
-			 * getFragmentManager().findFragmentById(R.id.filter_frag); if
-			 * (mFilterFragment != null) { bar.setTitle(text); }
-			 */
+			 String title = getString(R.string.menu_filter);
+	         bar.setTitle(title);
 		}
 
 		// Attach a GlobalLayoutListener so that we get a callback when the
@@ -173,14 +153,14 @@ public class FilterFragment extends Fragment {
 		ActionBar actionBar = getActivity().getActionBar();
 
 		if (show) {
-			// Show status bar (remove fullscreen flag)
+			// Show status bar (remove full screen flag)
 			window.setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			// Show system bar
 			view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
 			// Show action bar
 			actionBar.show();
 		} else {
-			// Add fullscreen flag (hide status bar)
+			// Add full screen flag (hide status bar)
 			window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			// Hide system bar
@@ -196,8 +176,7 @@ public class FilterFragment extends Fragment {
 	public void onDestroyView() {
 		super.onDestroyView();
 		// Always detach ViewTreeObserver listeners when the view tears down
-		getView().getViewTreeObserver().removeGlobalOnLayoutListener(
-				layoutListener);
+		getView().getViewTreeObserver().removeGlobalOnLayoutListener(layoutListener);
 	}
 
 	// Because the fragment doesn't have a reliable callback to notify us when
@@ -233,39 +212,5 @@ public class FilterFragment extends Fragment {
 			}
 		}
 	};
-
-	public class ThemeOnItemSelectedListener implements OnItemSelectedListener {
-
-		public void onItemSelected(AdapterView<?> parent, View view, int pos,
-				long id) {
-			Toast.makeText(parent.getContext(),
-					"The theme is " + parent.getItemAtPosition(pos).toString(),
-					Toast.LENGTH_LONG).show();
-			Toast.makeText(parent.getContext(), "Toggle theme...",
-					Toast.LENGTH_SHORT).show();
-		}
-
-		public void onNothingSelected(AdapterView parent) {
-			// Do nothing.
-		}
-	}
-
-	public class LanguageOnItemSelectedListener implements
-			OnItemSelectedListener {
-
-		public void onItemSelected(AdapterView<?> parent, View view, int pos,
-				long id) {
-			Toast.makeText(
-					parent.getContext(),
-					"The language is "
-							+ parent.getItemAtPosition(pos).toString(),
-					Toast.LENGTH_LONG).show();
-			Toast.makeText(parent.getContext(), "Toggle language...",
-					Toast.LENGTH_SHORT).show();
-		}
-
-		public void onNothingSelected(AdapterView parent) {
-			// Do nothing.
-		}
-	}
+	
 }

@@ -19,12 +19,10 @@ package org.android.calevent.frontend;
 import java.util.Calendar;
 import java.util.List;
 
-import org.android.calevent.frontend.dialogs.FilterDialogFragment;
-import org.android.calevent.frontend.fragments.CameraActivity;
-import org.android.calevent.frontend.fragments.ContentActivity;
+import org.android.calevent.frontend.activities.ContentActivity;
+import org.android.calevent.frontend.activities.FilterActivity;
+import org.android.calevent.frontend.activities.SettingsActivity;
 import org.android.calevent.frontend.fragments.ContentFragment;
-import org.android.calevent.frontend.fragments.FilterActivity;
-import org.android.calevent.frontend.fragments.SettingsActivity;
 import org.android.calevent.frontend.fragments.TitlesFragment;
 import org.android.calevent.stub.Directory;
 
@@ -50,7 +48,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -80,7 +78,10 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     private String[] mToggleLabels = {"Show Titles", "Hide Titles"};
     private static final int NOTIFICATION_DEFAULT = 1;
     private static final String ACTION_DIALOG = "com.example.android.hcgallery.action.DIALOG";
+    private static final int PREFS_MODE = 0;
+
     private int mThemeId = -1;
+    private int mLanguageId = -1;
     private boolean mDualFragments = false;
     private boolean mTitlesHidden = false;
     private SearchView mSearchView;
@@ -91,11 +92,19 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         
+        // Restore preferences
+        SharedPreferences settings = getPreferences(PREFS_MODE);
+        mThemeId = settings.getInt("theme", -1);
+        mLanguageId = settings.getInt("language", -1);
+        
         if(savedInstanceState != null) {
             if (savedInstanceState.getInt("theme", -1) != -1) {
-              mThemeId = savedInstanceState.getInt("theme");
+              mThemeId = savedInstanceState.getInt("theme");   
               this.setTheme(mThemeId);
             }
+            if (savedInstanceState.getInt("language", -1) != -1) {
+                mLanguageId = savedInstanceState.getInt("language");
+              }
             mTitlesHidden = savedInstanceState.getBoolean("titlesHidden");
         }
 
@@ -125,11 +134,7 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        // If the device doesn't support camera, remove the camera menu item
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            menu.removeItem(R.id.menu_camera);
-        }
-        
+
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchItem.getActionView();
         setupSearchView(searchItem);
@@ -182,6 +187,21 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     protected boolean isAlwaysExpanded() {
         return false;
     }
+    
+    @Override
+    protected void onStop(){
+       super.onStop();
+
+      // We need an Editor object to make preference changes.
+      // All objects are from android.context.Context
+      SharedPreferences settings = getPreferences(PREFS_MODE);
+      SharedPreferences.Editor editor = settings.edit();
+      editor.putInt("theme", mThemeId);
+
+      // Commit the edits!
+      editor.commit();
+    }
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -197,19 +217,16 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_camera:
-            Intent intent = new Intent(this, CameraActivity.class);
-            intent.putExtra("theme", mThemeId);
-            startActivity(intent);
-            Toast.makeText(this, "Camera...", Toast.LENGTH_SHORT).show();
-            return true;
         case R.id.menu_filter:
         	//showFilterDialog(getString(R.string.filter_dialog_title));
         	Intent filterIntent = new Intent(this, FilterActivity.class);
         	filterIntent.putExtra("theme", mThemeId);
             startActivity(filterIntent);
             Toast.makeText(this, "Filter...", Toast.LENGTH_SHORT).show();
-            return true;     
+            return true; 
+        case R.id.menu_search:
+            Toast.makeText(this, "Tapped search", Toast.LENGTH_SHORT).show();
+            return true;
         case R.id.menu_refresh:
         	Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
             getWindow().getDecorView().postDelayed(
@@ -219,9 +236,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
                         }
                     }, 1000);
             return true;    
-        case R.id.menu_search:
-            Toast.makeText(this, "Tapped search", Toast.LENGTH_SHORT).show();
-            return true;
         case R.id.menu_calendar:
         	Calendar now = Calendar.getInstance();
             // A date-time specified in milliseconds since the epoch.
@@ -236,6 +250,7 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         case R.id.menu_settings:
         	Intent settingsIntent = new Intent(this, SettingsActivity.class);
         	settingsIntent.putExtra("theme", mThemeId);
+        	settingsIntent.putExtra("language", mLanguageId);
             startActivity(settingsIntent);
             Toast.makeText(this, "Tapped settings", Toast.LENGTH_SHORT).show();
             return true;
@@ -243,7 +258,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
             toggleVisibleTitles();
             Toast.makeText(this, "Toggle Titles...", Toast.LENGTH_SHORT).show();
             return true;
-
         case R.id.menu_toggleTheme:
             if (mThemeId == R.style.AppTheme_Dark) {
                 mThemeId = R.style.AppTheme_Light;
@@ -378,18 +392,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
         newFragment.show(ft, "dialog");
     }
     
-    void showFilterDialog(String text) {
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-        FilterDialogFragment newFragment = FilterDialogFragment.newInstance(text);
-        
-        // Show the dialog.
-        newFragment.show(ft, "dialog");
-    }
-
     void showNotification(boolean custom) {
         final Resources res = getResources();
         final NotificationManager notificationManager = (NotificationManager) getSystemService(
@@ -472,38 +474,6 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
 	      }	
     }
 
-
-    /** Dialog implementation that shows a simple dialog as a fragment */
-    public static class MyDialogFragment extends DialogFragment {
-
-        public static MyDialogFragment newInstance(String title) {
-            MyDialogFragment frag = new MyDialogFragment();
-            Bundle args = new Bundle();
-            args.putString("text", title);
-            frag.setArguments(args);
-            return frag;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-          
-        	String text = getArguments().getString("text");
-            
-            AlertDialog dialog = new AlertDialog.Builder(getActivity())
-            .setTitle("Awesome Dialog")
-            .setMessage(text)
-            .setPositiveButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        }
-                    }
-            ).create();
-            
-            return dialog;
-        }
-    }
-
-
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 		
@@ -546,4 +516,34 @@ public class MainActivity extends Activity implements TitlesFragment.OnItemSelec
 		// TODO Auto-generated method stub
 		
 	}
+	
+	 /** Dialog implementation that shows a simple dialog as a fragment */
+    public static class MyDialogFragment extends DialogFragment {
+
+        public static MyDialogFragment newInstance(String title) {
+            MyDialogFragment frag = new MyDialogFragment();
+            Bundle args = new Bundle();
+            args.putString("text", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+          
+        	String text = getArguments().getString("text");
+            
+            AlertDialog dialog = new AlertDialog.Builder(getActivity())
+            .setTitle("Awesome Dialog")
+            .setMessage(text)
+            .setPositiveButton(android.R.string.ok,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    }
+            ).create();
+            
+            return dialog;
+        }
+    }
 }
